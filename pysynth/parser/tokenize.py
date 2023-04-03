@@ -1,4 +1,5 @@
 special_symbols = {c for c in ".,!@#$%^/&*()-+={}[]:\t=<>`'\"\n "}
+stopwords = {"a", "to", "from", "it", "the"}
 
 
 def predicates(text: str) -> list[str]:
@@ -40,11 +41,10 @@ def index(preds: list[str], query) -> int:
     return -1
 
 
-stopwords = {"a", "to", "from", "it", "the"}
-def lemmatize(preds: list[str]) -> list[str]:
-    from nltk.stem import WordNetLemmatizer
-    lemmatizer = WordNetLemmatizer()
-    return [lemmatizer.lemmatize(pred) for pred in preds if pred not in stopwords]
+def stem(preds: list[str]) -> list[str]:
+    from nltk.stem import PorterStemmer
+    stemmer = PorterStemmer()
+    return [stemmer.stem(pred) for pred in preds if pred not in stopwords]
 
 
 def words(preds: list[str]) -> list[str]:

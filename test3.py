@@ -5,23 +5,38 @@ database = Database([tomodel(block) for block in blocks(
         import sklearn
         import pickle
         import os
-        model = sklearn.SVR()
-        model = sklearn.LogisticRegression()
-        model = sklearn.LogisticRegression(seeds=seed)
-        model.train(x, y)
-        if os.file.exists(path):
-            model = pickle.load(path)
         
-        # standardize
-        variable = variable-variable.min()
-        variable = variable / variable.max()
+        def normalize(x, y):
+            x = x / x.sum()  # normalize
+            y = y / y.sum()  # normalize
+            return x, y
+            
+        def train_svr(x, y_train):
+            x_train = x_train / x_train.sum()  # normalize
+            model = sklearn.SVR()
+            model.train(x_train, y_train)
+            return model
+            
+        def load_model(path):
+            if os.file.exists(path):
+                model = pickle.load(path)
+            return model
+            
+        def logistic_regressor():
+            model = sklearn.LogisticRegression()
+            return model
         
-        variable = variable/variable.sum()  # normalize
+        def standardize(variable):
+            # standardize
+            variable = variable-variable.mean()
+            variable = variable / variable.std()
+            
+            return variable
         """
     )
 ])
 
 query = Multispecs(Synthesizer(database))(
-    "svr with seed, load it from a path, train it, normalize variable x, standardize y"
+    "svr, load it from a path, train the model, normalize training x, standardize y"
 )
 print(query)

@@ -31,7 +31,7 @@ class Equivalence:
                     return False
             if model2-k != model1:
                 if self.complexity(model2-(model2-k)) > match:
-                    #print("prevented by", k, k.specifications)
+                    #print("prevented by", k.specifications, (model2-(model2-k)).specifications)
                     return False
         return True
 

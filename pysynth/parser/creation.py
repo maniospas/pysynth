@@ -4,12 +4,23 @@ from pysynth.parser.tokenize import *
 python_words = {"if", "for", "else"}
 
 
+def _unwrap_methods(models: list[str], imports: str) -> list[str]:
+    ret = list()
+    for model in models:
+        if model.startswith("def"):
+            text = "\n".join(model.split("\n")[1:])
+            ret.extend(blocks(imports+text))
+        else:
+            ret.append(imports+model)
+    return ret
+
+
 def blocks(text: str):
     lines = text.split("\n")
     lines = [line for line in lines]
-    lin = [line for line in lines if line.strip()]
-    tab = len(lin[0])-len(lin[0].lstrip())
-    lines = [line[tab:] for line in lines]
+    lin = [line for line in lines if line.strip() and "import " not in line]
+    tab = 0 if not lin else len(lin[0])-len(lin[0].lstrip())
+    lines = [line[tab:] if "import" not in line else line.strip() for line in lines]
     imports = ""
     block = None
     models = list()
@@ -19,12 +30,12 @@ def blocks(text: str):
             imports += line+"\n"
         elif line.strip().startswith("#"):
             if block is not None:
-                models.append(imports+block)
+                models.append(block)
             comment_block = True
             block = line
         elif len(line.strip()) == 0:
             if comment_block and block is not None:
-                models.append(imports+block)
+                models.append(block)
                 block = None
             comment_block = False
         else:
@@ -32,18 +43,21 @@ def blocks(text: str):
             if block is None:
                 block = line
             elif tab == 0 and not comment_block:
-                models.append(imports+block)
+                models.append(block)
                 block = line
             else:
                 block += "\n"+line
     if block is not None:
-        models.append(imports+block)
+        models.append(block)
+    models = _unwrap_methods(models, imports)
     return models
 
 
 def tomodel(text: str):
     lines = text.split("\n")
     lines = [line for line in lines if line.strip()]
+    import_lines = [line for line in lines if "import " in line]
+    lines = [line for line in lines if "import " not in line]
     tab = len(lines[0])-len(lines[0].lstrip())
     lines = [line[tab:] for line in lines]
 
@@ -53,13 +67,13 @@ def tomodel(text: str):
     outputs = list()
     inputs = list()
     last_var = None
-    for line in lines:
+    for line in import_lines+lines:
         line = predicates(line)
         if 'import' in line:
             for symbol in words(line[max(index(line, 'import'), index(line, 'as')) + 1:]):
                 imports[symbol] = SourceCodeLine(line)
         else:
-            specifications += lemmatize(subwords(words(line)))
+            specifications += stem(subwords(words(line)))
             comment_index = index(line, "#")
             if comment_index != -1:
                 line = line[:comment_index]
@@ -84,8 +98,8 @@ def tomodel(text: str):
     outputs = set(outputs)
     return Model(specifications=specifications,
                  expressions=source,
-                 inputs=[Variable(varname, lemmatize(subwords([varname]))) for varname in inputs],
-                 outputs=[Variable(varname, lemmatize(subwords([varname]))) for varname in outputs])
+                 inputs=[Variable(varname, stem(subwords([varname]))) for varname in inputs],
+                 outputs=[Variable(varname, stem(subwords([varname]))) for varname in outputs])
 
 
 def code(text: str, dependencies: str = "") -> list[SourceCodeLine]:
@@ -116,7 +130,7 @@ def specs(description: str) -> list[str]:
     :param description: A string description of the specifications.
     :return: A list of string predicates.
     """
-    return Collection(lemmatize(words(predicates(description))))
+    return Collection(stem(words(predicates(description))))
 
 
 def var(name: str, description: str, default: str=None) -> Variable:

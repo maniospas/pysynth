@@ -10,6 +10,9 @@ class Variable:
         self.specifications = Collection(specifications)
         self.default = default
 
+    def copy(self):
+        return Variable(self.name, self.specifications, self.default)
+
     def __sub__(self, other):
         return Variable(self.name, self.specifications-other.specifications, self.default)
 
@@ -101,14 +104,6 @@ class Model:
     def copy(self):
         return Model(self.specifications, [expr.copy() for expr in self.expressions], self.inputs, self.outputs)
 
-    def augment(self):
-        prev_specs = self.specifications
-        for var in self.vars:
-            self.specifications = self.specifications + var.specifications
-        #for var in self.vars:
-        #    var.specifications += prev_specs
-        return self
-
     @property
     def vars(self):
         return self.inputs + self.outputs
@@ -158,7 +153,7 @@ class Model:
             outs[expr] = set([var.name for var in self.outputs if var.name in splt[0]])
             ins[expr] = set([var.name for var in self.inputs if var.name in splt[1]])
         changes = 1
-        for _ in range(10):
+        for _ in range(20):
             if changes == 0:
                 break
             changes = 0
