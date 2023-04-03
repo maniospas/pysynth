@@ -1,14 +1,14 @@
 # pysynth
 Implements linear program synthesis in python.
 
-## :compass: Progrss
+## :compass: Progress
 - [x] Behaviorizeable relations
 - [x] Linear code synthesis
 - [ ] Database management
 - [ ] Web service
 
 ## :rocket: Quickstart
-*This is a tentative programming interface*
+*This is a tentative programming interface.*
 
 You can parse a file containing import statements
 and method definitions with the following snippet:
