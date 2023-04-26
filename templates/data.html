@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="input-group mb-4">
+        <form method="POST" action="{{ url_for('data') }}" class="input-group mb-4 d-flex">
+            <input type="submit" value="Search" class="btn btn-secondary">
+            <input type="text" name="q" id="q" placeholder="all" value="{{ query }}" class="form-control form-control-lg">
+            <a href="{{ url_for('parse') }}" class="btn btn-success btn-lg">+</a>
+        </form>
+    </div>
+    {% if entries %}
+        {% for entry in entries %}
+            <div class="card" style="width: 25rem;">
+                <h5 class="card-title">{{ entry.name }}</h5>
+                <h6 class="card-subtitle mb-2 text-muted">added by {{ entry.owner() }}</h6>
+                <pre class="card-text"><code class="language-python">{{ entry.code }}</code></pre>
+                <div class="btn-group" role="group">
+                    <a href="https://{{ entry.source }}" target="_blank" rel="noopener noreferrer" type="button" class="btn btn-info btn-sm d-inline-block">{{ entry.source }}</a>
+                    {% if entry.permissions() %}
+                    <form method="GET" action="{{ url_for('edit', entry_id=entry.id) }}">
+                    <button class="btn btn-warning btn-sm d-inline-block" value='Edit'>Edit</button>
+                    </form>
+                    <form method="POST" action="{{ url_for('delete', entry_id=entry.id) }}">
+                    <button class="btn btn-danger btn-sm d-inline-block" value='Delete'>Delete</button>
+                    </form>
+                    {% endif %}
+                </div>
+            </div>
+        {% endfor %}
+    {% else %}
+        <p>Nothing found.</p>
+    {% endif %}
+{% endblock %}

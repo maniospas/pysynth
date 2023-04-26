@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <form method="POST" action="{{ url_for('index') }}">
+    <div class="input-group mb-4">
+        <input type="submit" value="Synthesize" class="btn btn-secondary">
+        <input type="text" name="q" id="q" class="form-control form-control-lg" value="{{ query }}" placeholder="spec 1, spec 2, ..." required>
+    </div>
+      {% if implementation %}
+    <pre><code class="language-python">{{ implementation }}</code></pre>
+      {% endif %}
+  </form>
+{% endblock %}

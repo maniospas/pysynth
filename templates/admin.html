@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<ul class="list-group">
+{% for user in users %}
+<li class="list-group-item">
+    {{ user.username }}
+        <span class="badge badge-primary">{{ user.additions | length }}</span>
+    <div class="btn-group float-right" role="group">
+        {% if user.id == current_user.id %}
+            <button class="btn btn-success btn-sm d-inline-block disabled" value='Admin'>Admin</button>
+        {% elif user.is_admin%}
+            <button class="btn btn-success btn-sm d-inline-block disabled" value='Admin'>Admin</button>
+        {% else %}
+            <form method="POST" action="{{ url_for('permissions', user_id=user.id) }}">
+            <button class="btn btn-danger btn-sm d-inline-block" value='Admin'>Make admin</button>
+            </form>
+        {% endif %}
+    </div>
+</li>
+{% endfor %}
+</ul>
+
+{% endblock %}

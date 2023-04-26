@@ -15,7 +15,7 @@ def _unwrap_methods(models: list[str], imports: str) -> list[str]:
     return ret
 
 
-def blocks(text: str):
+def blocks(text: str) -> list[str]:
     lines = text.split("\n")
     lines = [line for line in lines]
     lin = [line for line in lines if line.strip() and "import " not in line]
@@ -53,7 +53,7 @@ def blocks(text: str):
     return models
 
 
-def tomodel(text: str):
+def tomodel(text: str, url: str=None) -> Model:
     lines = text.split("\n")
     lines = [line for line in lines if line.strip()]
     import_lines = [line for line in lines if "import " in line]
@@ -71,7 +71,7 @@ def tomodel(text: str):
         line = predicates(line)
         if 'import' in line:
             for symbol in words(line[max(index(line, 'import'), index(line, 'as')) + 1:]):
-                imports[symbol] = SourceCodeLine(line)
+                imports[symbol] = SourceCodeLine(line, source=url)
         else:
             specifications += stem(subwords(words(line)))
             comment_index = index(line, "#")
@@ -79,7 +79,7 @@ def tomodel(text: str):
                 line = line[:comment_index]
             if not words(line):
                 continue
-            source.append(SourceCodeLine(line, dependencies=[v for k, v in imports.items() if k in line]))
+            source.append(SourceCodeLine(line, dependencies=[v for k, v in imports.items() if k in line], source=url))
             eqindex = index(line, "=")
             if eqindex != -1:
                 for i in range(eqindex):

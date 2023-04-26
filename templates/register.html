@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <form method="POST">
+    <div class="input-group mb-4">
+      <input type="text" name="username" id="username" placeholder="username" class="form-control form-control-lg" required>
+    </div>
+    <div class="input-group mb-4">
+      <input type="password" name="password" id="password" class="form-control form-control-lg" placeholder="password" required>
+    </div>
+    <div class="input-group mb-4">
+      <input type="password" name="confirm_password" id="confirm_password" class="form-control form-control-lg" placeholder="confirm password" required>
+    </div>
+    <div>
+      <input type="submit" value="Register" class="btn btn-primary btn-lg btn-block mb-4">
+    </div>
+  </form>
+{% endblock %}

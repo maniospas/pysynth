@@ -18,7 +18,8 @@ class Multispecs:
 
     def __call__(self, specifications: str):
         specifications = specifications.replace(" and ", "\n").replace(",", "\n")
-        assert "\n" in specifications  # force multiclause specifications to avoid common usage bugs
+        if "\n" not in specifications:
+            raise Exception("Express at least two clauses in specifications (separated by comma or newline)")
         specifications = [spec.strip() for spec in specifications.split("\n") if spec.strip()]
 
         from pysynth import specs, Model
